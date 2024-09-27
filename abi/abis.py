@@ -1,6 +1,13 @@
-import json
 import os
+import sys
+from pathlib import Path
+from utils.read_json import read_json
 
-abi_path_erc20 = os.path.join(os.path.dirname(__file__), "ERC20.json")
-with open(abi_path_erc20, "r") as file:
-    ERC20_ABI = json.load(file)
+if getattr(sys, 'frozen', False):
+    ROOT_DIR = Path(sys.executable).parent.absolute()
+else:
+    ROOT_DIR = Path(__file__).parent.parent.absolute()
+
+ABIS_DIR = os.path.join(ROOT_DIR, "abi")
+
+ERC20_ABI = read_json(os.path.join(ABIS_DIR, "ERC20.json"))
