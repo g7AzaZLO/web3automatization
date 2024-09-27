@@ -91,7 +91,7 @@ class Client:
         print(f"Transaction sent with hash {tx_hash.hex()}")
         return tx_hash
 
-    def send_eth(self, to_address: str, amount: float) -> HexBytes | None:
+    def send_native(self, to_address: str, amount: float) -> HexBytes | None:
         """
         Отправляет ETH на указанный адрес с автоматической оценкой газа.
 
