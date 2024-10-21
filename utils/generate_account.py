@@ -11,8 +11,9 @@ def generate_account(nums: int) -> list[list[str, str, str]]:
         print(f"Адрес вашего кошелька: {account.address}")
         print(f"Сид фраза вашего кошелька: {mnemonic}")
         print(f"Приватный ключ вашего кошелька: {account.key.hex()}")
-        accounts.append([account.address, mnemonic, "0x"+account.key.hex()])
+        accounts.append([account.address, mnemonic, "0x" + account.key.hex()])
     return accounts
+
 
 def mnemonic_to_private_key(mnemonics: list) -> list:
     """

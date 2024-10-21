@@ -11,3 +11,4 @@ else:
 ABIS_DIR = os.path.join(ROOT_DIR, "abi")
 
 ERC20_ABI = read_json(os.path.join(ABIS_DIR, "ERC20.json"))
+CROSSCURVE_START_ABI = read_json(os.path.join(ABIS_DIR, "crosscurve_start.json"))

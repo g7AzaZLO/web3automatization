@@ -1,4 +1,6 @@
 import requests
+from web3 import Web3
+from abi.abis import CROSSCURVE_START_ABI
 from classes.chain import Chain, chains
 from classes.client import Client
 from config import tokens, UNIFIED_ROUTER_V2
@@ -168,9 +170,61 @@ def create_swap_transaction(sender: str, routing: dict, estimate: dict, recipien
     return None
 
 
+def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dict) -> dict | None:
+    """
+    Выполняет транзакцию с использованием предоставленных данных.
+
+    :param client: Объект клиента для подключения и отправки транзакции.
+    :param raw_tx: Словарь с данными сырой транзакции.
+    :param estimate: Словарь с оценкой маршрута.
+    :return: Словарь с данными о завершенной транзакции или None в случае ошибки.
+    """
+    try:
+        router = client.connection.eth.contract(address=Web3.to_checksum_address(raw_tx['to']),
+                                                abi=CROSSCURVE_START_ABI)
+        args = [
+            list(raw_tx['args'][0]),
+            list(raw_tx['args'][1]),
+            [
+                int(raw_tx['args'][2]['executionPrice']),
+                int(raw_tx['args'][2]['deadline']),
+                int(raw_tx['args'][2]['v']),
+                Web3.to_bytes(hexstr=raw_tx['args'][2]['r']),
+                Web3.to_bytes(hexstr=raw_tx['args'][2]['s'])
+            ]
+        ]
+
+        value = int(raw_tx['value']) + int(estimate['executionPrice'])
+        transaction = router.functions.start(
+            *args
+        ).build_transaction({
+            'from': client.public_key,
+            'value': value,
+            'gas': client.connection.eth.estimate_gas({
+                'to': UNIFIED_ROUTER_V2,
+                'from': client.public_key,
+                'data': router.encodeABI(fn_name="start", args=args),
+                'value': value
+            }),
+            'gasPrice': client.connection.eth.gas_price,
+            'nonce': client.get_nonce(client.public_key),
+        })
+
+        print("Try to send swap transaction")
+        signed_tx = client.account.sign_transaction(transaction)
+        tx_hash = client.connection.eth.send_raw_transaction(signed_tx.rawTransaction)
+        receipt = client.connection.eth.wait_for_transaction_receipt(tx_hash)
+
+        print(f"Transaction successful with hash: {tx_hash.hex()}")
+        return receipt
+
+    except Exception as e:
+        print(f"Error occurred while executing transaction: {e}")
+        return None
+
 # example
 # client = Client("private_key", chains["ethereum"].rpc, "proxy") -  создаем клиента
 # route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "USDC.e", 1000, 0.1)["route"] - ищем роут из оптимизм usdt в арбитрум usdc.e, количество 1000$, проскальзывание 0.1%
 # estimate = get_estimate(route) - получаем estimate
-# swap_tnx = create_swap_transaction("0xb69d7F30Ba4CDBcbd1234b4fe3E079e0954D59B3", route, estimate) - формируем транзакцию
-#client.send_transaction(swap_tnx) - подписываем и отправляем транзакцию
+# swap_tnx = create_swap_transaction(client.public_key, route, estimate) - формируем транзакцию
+# swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate) - подписываем и отправляем транзакцию
