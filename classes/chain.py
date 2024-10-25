@@ -90,5 +90,29 @@ chains = {
         100,
         "https://gnosis-rpc.publicnode.com",
         "XDAI",
-        ["https://gnosis-rpc.publicnode.com", "https://gnosis-pokt.nodies.app", "https://1rpc.io/gnosis"])
+        ["https://gnosis-rpc.publicnode.com", "https://gnosis-pokt.nodies.app", "https://1rpc.io/gnosis"]),
+    "linea": Chain(
+        'linea',
+        59144,
+        "https://linea-rpc.publicnode.com",
+        "ETH",
+        ["https://rpc.linea.build", "https://linea.blockpi.network/v1/rpc/public"]),
+    "blast": Chain(
+        'blast',
+        81457,
+        "https://blast-rpc.publicnode.com",
+        "ETH",
+        ["https://blast.drpc.org", "https://rpc.blast.io"]),
+    "mantle": Chain(
+        'mantle',
+        5000,
+        "https://1rpc.io/mantle",
+        "MNT",
+        ["https://rpc.mantle.xyz", "https://mantle-mainnet.public.blastapi.io", "https://1rpc.io/mantle"]),
+    "taiko": Chain(
+        'taiko',
+        167000,
+        "https://rpc.ankr.com/taiko",
+        "ETH",
+        ["https://taiko-mainnet.rpc.porters.xyz/taiko-public", "https://taiko-rpc.publicnode.com", "https://taiko.drpc.org"])
 }
