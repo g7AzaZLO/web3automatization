@@ -1,27 +1,28 @@
 # Документация к библиотеке `web3automatization`
 
-`web3automatization` — это библиотека для упрощения взаимодействия с блокчейн-сетями на основе EVM через web3py. Она предоставляет удобные методы для управления аккаунтом, отправки транзакций, работы с токенами ERC-20 и получения информации из сети.
+`web3automatization` — это библиотека для упрощения взаимодействия с блокчейн-сетями на основе EVM через web3py. Она предоставляет удобные методы для управления аккаунтом, отправки транзакций, работы с токенами ERC-20 и получения информации из сети. Так же предоставляет готовые моудли для взаимодействия с различными DeFi проектами
 
 ## Возможности
 
 - Подключение к различным блокчейн-сетям через RPC.
 - Управление аккаунтом на основе приватного ключа.
-- Отправка ETH и ERC-20 токенов.
+- Отправка нативных и ERC-20 токенов.
 - Выполнение операций `approve` для токенов ERC-20.
 - Получение балансов и информации о токенах.
 - Автоматическая оценка газа для транзакций.
+- Кроссчейн и инчейн свапы через CrossCurve
 
-## Установка зависимостей
+## Установка
 
 ```bash
-pip install -r requirements.txt
+pip install web3automatization
 ```
 ## Использование
 
 ### Импорт клиента
 
 ```python
-from client import Client
+from web3automatization import Client
 ```
 
 ### Инициализация клиента
@@ -207,7 +208,7 @@ class Client:
 ## Пример полного использования
 
 ```python
-from client import Client
+from web3automatization import Client
 
 # Инициализация клиента
 client = Client(
@@ -243,8 +244,81 @@ print(f"Approve выполнен. Хеш транзакции: {tx_hash.hex()}")
 allowance = client.get_allowance(token_address, spender_address)
 print(f"Allowance для spender: {allowance}")
 ```
+## Пример использования модуля CrossCurve
 
+### Импорт модуля
+```Python
+from web3automatization import Client, chains
+from web3automatization.modules.crosscurve.logic import get_swap_route, get_estimate,create_swap_transaction,send_crosscurve_swap_transaction
+```
+
+## Поиск роута
+```Python
+chain_in = chains["optimism"] 
+token_in = "USDT"
+chain_out = chains["arbitrum"]
+token_out = "USDC.e"
+amount = 1000
+slippage = 0.1
+
+route = get_swap_route(chain_in, token_in, chain_out, token_out, amount, slippage)["route"]
+```
+
+**Параметры:**
+
+- `chain_in` (Chain): Объект класса Chain из которого будет происходить свап.
+- 'token_in' (str): Имя токена из которого будет происходить свап.
+- 'chain_out' (Chain): Объект класса Chain в который будем свапать.
+- 'token_out' (str): Имя токена в который будет происходить свап.
+- 'amount' (float): Количество монет, которое будем свапать.
+- 'slippage' (float): Процент проскальзывания 
+
+**Получишийся роут:**
+```commandline
+1000 USDT из сети optimism в USDC.e в сети arbitrum с максимальныи проскальзыванием 0.1%
+```
+
+## Получение estimate транзакции
+```Python
+estimate = get_estimate(route)
+```
+**Параметры**
+- "route" (list): получившийся путь из get_swap_route
+
+## Формирование свап-транзакции
+```Python
+swap_tnx = create_swap_transaction(sender, routing, estimate, recipient, client)
+```
+**Параметры:**
+- "sender" (str): Адрес с которого будет происходить транзакция
+- "routing" (list): Путь транзакции, который мы получаем из get_swap_route()
+- "estimate" (dict): estimate для транзакции, полученый из get_estimate
+- "recipient" (str, необязательно): Адрес на который будет уходить транзакция
+- "client" (Сlient, необязательно): Объект класса Client, если его передать, то будет исспользоваться прокси клиента
+
+## Подписание и отправка свап транзакции
+```Python
+swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate)
+```
+**Параметры:**
+- "client" (Client): Объект класса клиент, приватным ключом которого будет подписываться транзакция
+- "swap_thx" (dict): Свап транзакция, полученая из create_swap_transaction(), которую будем подписывать
+- "estimate" (dict): estimate транзакции, полученный из get_estimate()
 ---
+
+## Полное использование
+```Python
+from web3automatization.classes.chain import chains
+from web3automatization.classes.client import Client
+from web3automatization.modules.crosscurve.logic import get_swap_route, get_estimate, create_swap_transaction, \
+    send_crosscurve_swap_transaction
+
+client = Client("0x...", chains["ethereum"].rpc, "123.123.123.12:8080") #-  создаем клиента
+route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "USDC.e", 1000, 0.1)["route"] #- ищем роут из оптимизм usdt в арбитрум usdc.e, количество 1000$, проскальзывание 0.1%
+estimate = get_estimate(route) #- получаем estimate
+swap_tnx = create_swap_transaction(client.public_key, route, estimate) #- формируем транзакцию
+swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate) #- подписываем и отправляем транзакцию
+```
 
 ## Заключение
 

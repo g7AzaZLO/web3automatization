@@ -1,8 +1,8 @@
 import requests
 from web3 import Web3
-from abi.abis import CROSSCURVE_START_ABI
-from classes.chain import Chain, chains
-from classes.client import Client
+from web3automatization.abi.abis import CROSSCURVE_START_ABI
+from web3automatization.classes.chain import Chain
+from web3automatization.classes.client import Client
 from config import crosscurve_tokens, UNIFIED_ROUTER_V2
 
 
@@ -221,10 +221,3 @@ def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dic
     except Exception as e:
         print(f"Error occurred while executing transaction: {e}")
         return None
-
-# example
-# client = Client("private_key", chains["ethereum"].rpc, "proxy") #-  создаем клиента
-# route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "USDC.e", 1000, 0.1)["route"] #- ищем роут из оптимизм usdt в арбитрум usdc.e, количество 1000$, проскальзывание 0.1%
-# estimate = get_estimate(route) #- получаем estimate
-# swap_tnx = create_swap_transaction(client.public_key, route, estimate) #- формируем транзакцию
-# swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate) #- подписываем и отправляем транзакцию

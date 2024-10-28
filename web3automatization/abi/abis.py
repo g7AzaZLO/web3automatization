@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from utils.read_utils import read_json
+from web3automatization.utils.read_utils import read_json
 
 if getattr(sys, 'frozen', False):
     ROOT_DIR = Path(sys.executable).parent.absolute()

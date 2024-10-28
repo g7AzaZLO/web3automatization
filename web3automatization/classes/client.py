@@ -1,7 +1,6 @@
-from decimal import Decimal
 from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
-from abi.abis import ERC20_ABI
+from web3automatization.abi.abis import ERC20_ABI
 
 
 class Client:
