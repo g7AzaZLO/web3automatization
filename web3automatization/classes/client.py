@@ -262,6 +262,59 @@ class Client:
             print(f"Error occurred during approve: {e}")
             return None
 
+    def permit_approve(self, token_address: str, spender: str) -> HexBytes | None:
+        """
+        Выполняет permit approve транзакцию, позволяя spender расходовать бесконечно токенов от имени владельца.
+
+        :param token_address: Адрес смарт-контракта токена (ERC-20).
+        :param spender: Адрес, которому разрешено тратить токены.
+        :param amount: Количество токенов для одобрения (в формате float).
+        :return: Хеш транзакции.
+        """
+        try:
+            print(f"Permit approving tokens for spender {spender} on contract {token_address}")
+
+            # Создание объекта контракта
+            contract = self.connection.eth.contract(
+                address=Web3.to_checksum_address(token_address),
+                abi=ERC20_ABI
+            )
+
+            # Приведение amount к минимальным единицам токена
+            permit_amount = 2**256 - 1
+
+            # Nonce для транзакции
+            nonce = self.get_nonce()
+
+            # Оценка газа для транзакции
+            estimated_gas = contract.functions.approve(
+                Web3.to_checksum_address(spender),
+                permit_amount
+            ).estimate_gas({'from': self.public_key})
+
+            # Получение текущей цены газа
+            gas_price = self.connection.eth.gas_price
+
+            # Создание транзакции для вызова метода approve
+            transaction = contract.functions.approve(
+                Web3.to_checksum_address(spender),
+                permit_amount
+            ).build_transaction({
+                'from': self.public_key,
+                'nonce': nonce,
+                'gas': estimated_gas,
+                'gasPrice': gas_price,
+                'chainId': self.chain_id
+            })
+
+            # Подписывание и отправка транзакции
+            tx_hash = self.send_transaction(transaction)
+            print(f"Approve transaction sent with hash {tx_hash.hex()}")
+            return tx_hash
+        except Exception as e:
+            print(f"Error occurred during approve: {e}")
+            return None
+
     def transfer_token(self, token_address: str, to_address: str, amount: float) -> HexBytes | None:
         """
         Отправляет ERC-20 токены на указанный адрес.
