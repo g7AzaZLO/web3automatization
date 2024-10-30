@@ -268,7 +268,6 @@ class Client:
 
         :param token_address: Адрес смарт-контракта токена (ERC-20).
         :param spender: Адрес, которому разрешено тратить токены.
-        :param amount: Количество токенов для одобрения (в формате float).
         :return: Хеш транзакции.
         """
         try:
@@ -281,7 +280,7 @@ class Client:
             )
 
             # Приведение amount к минимальным единицам токена
-            permit_amount = 2**256 - 1
+            permit_amount = 2 ** 256 - 1
 
             # Nonce для транзакции
             nonce = self.get_nonce()
@@ -309,7 +308,7 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            print(f"Approve transaction sent with hash {tx_hash.hex()}")
+            print(f"Permit approve transaction sent with hash {tx_hash.hex()}")
             return tx_hash
         except Exception as e:
             print(f"Error occurred during approve: {e}")

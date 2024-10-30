@@ -114,6 +114,19 @@ print(f"Транзакция approve отправлена. Хеш: {tx_hash.hex(
 - `spender` (str): Адрес, которому разрешено тратить токены.
 - `amount` (float): Количество токенов для одобрения.
 
+### Выполнение операции `permit approve`
+```Ptrhon
+token_address = "адрес токена ERC-20"
+spender_address = "адрес, которому разрешено тратить токены"
+
+tx_hash = client.permit_approve(token_address, spender_address)
+print(f"Транзакция approve отправлена. Хеш: {tx_hash.hex()}")
+```
+**Параметры:**
+
+- `token_address` (str): Адрес смарт-контракта токена ERC-20.
+- `spender` (str): Адрес, которому разрешено тратить токены.
+
 ### Получение информации о токене
 
 #### Получение количества десятичных знаков (decimals)
