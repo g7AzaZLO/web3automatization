@@ -1,3 +1,9 @@
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR)
+
+
 class Chain:
     def __init__(self, name: str, chain_id: int, rpc: str, native_token: str, alternative_rpc: list[str]):
         self.name = name
@@ -17,7 +23,7 @@ class Chain:
             self.current_rpc_index += 1
             return True
         else:
-            print(f"No more alternative RPCs available for chain {self.name}")
+            logger.warning(f"No more alternative RPCs available for chain {self.name}")
             return False
 
     @classmethod
@@ -38,7 +44,7 @@ class Chain:
                     "native_token": chain.native_token,
                     "alternative_rpc": chain.alternative_rpc
                 }
-        print("Chain not found.")
+        logger.warning("Chain not found.")
         return None
 
 

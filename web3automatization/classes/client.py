@@ -1,6 +1,10 @@
+import logging
 from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
 from web3automatization.abi.abis import ERC20_ABI
+
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
 
 
 class Client:
@@ -13,7 +17,8 @@ class Client:
         :param proxy: URL прокси-сервера (например '312.123.43.43:8080').
         :raises ConnectionError: Если не удается подключиться к RPC.
         """
-        print(f"Initializing client with proxy {proxy}")
+        self.logger = logger
+        self.logger.info(f"Initializing client with proxy {proxy}")
 
         self.rpc = rpc
         self.proxy = proxy
@@ -28,7 +33,7 @@ class Client:
 
         # Проверка подключения к RPC
         if not self.connection.is_connected():
-            print(f"Failed to connect to the RPC at {self.rpc}")
+            self.logger.error(f"Failed to connect to the RPC at {self.rpc}")
             raise ConnectionError(f"Failed to connect to the RPC at {self.rpc}")
 
         self.chain_id = self.connection.eth.chain_id
@@ -38,13 +43,13 @@ class Client:
         self.account = self.connection.eth.account.from_key(self.private_key)
         self.public_key = self.account.address
 
-        print(f"Client initialized with public_key={self.public_key}")
+        self.logger.info(f"Client initialized with public_key={self.public_key}")
 
     def __del__(self) -> None:
         """
         Сообщает, что клиент был удален.
         """
-        print(f"Client with public_key={self.public_key} was deleted")
+        self.logger.info(f"Client with public_key={self.public_key} was deleted")
 
     def __str__(self) -> str:
         """
@@ -68,13 +73,13 @@ class Client:
         """
         if address is None:
             address = self.public_key
-        print(f"Getting nonce for address {address}")
+        self.logger.info(f"Getting nonce for address {address}")
         try:
             nonce = self.connection.eth.get_transaction_count(address)
-            print(f"Nonce for address {address}: {nonce}")
+            self.logger.info(f"Nonce for address {address}: {nonce}")
             return nonce
         except Exception as e:
-            print(f"Error occurred while getting nonce for address {address}: {e}")
+            self.logger.warning(f"Error occurred while getting nonce for address {address}: {e}")
             return None
 
     def send_transaction(self, transaction: dict) -> HexBytes:
@@ -84,10 +89,10 @@ class Client:
         :param transaction: Словарь с данными транзакции.
         :return: Хеш отправленной транзакции.
         """
-        print(f"Sending transaction: {transaction}")
+        self.logger.info(f"Sending transaction: {transaction}")
         signed_transaction = self.account.sign_transaction(transaction)
-        tx_hash = self.connection.eth.send_raw_transaction(signed_transaction.rawTransaction)
-        print(f"Transaction sent with hash {tx_hash.hex()}")
+        tx_hash = self.connection.eth.send_raw_transaction(signed_transaction.raw_transaction)
+        self.logger.info(f"Transaction sent with hash {tx_hash.hex()}")
         return tx_hash
 
     def send_native(self, to_address: str, amount: float) -> HexBytes | None:
@@ -98,7 +103,7 @@ class Client:
         :param amount: Сумма для отправки в ETH.
         :return: Хеш транзакции.
         """
-        print(f"Sending {amount} ETH to {to_address}")
+        self.logger.info(f"Sending {amount} ETH to {to_address}")
 
         # Приведение amount к минимальным единицам (wei)
         value = self.connection.to_wei(amount, 'ether')
@@ -125,10 +130,10 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            print(f"ETH transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"ETH transaction sent with hash {tx_hash.hex()}")
             return tx_hash
         except Exception as e:
-            print(f"Error occurred while sending ETH: {e}")
+            self.logger.warning(f"Error occurred while sending ETH: {e}")
             return None
 
     def get_transaction_receipt(self, transaction_hash: HexBytes) -> dict:
@@ -138,7 +143,7 @@ class Client:
         :param transaction_hash: Хеш транзакции.
         :return: Словарь с информацией о транзакции.
         """
-        print(f"Getting transaction receipt for hash {transaction_hash.hex()}")
+        self.logger.info(f"Getting transaction receipt for hash {transaction_hash.hex()}")
         return self.connection.eth.get_transaction_receipt(transaction_hash)
 
     def get_native_balance(self, address: str = None) -> float | None:
@@ -150,14 +155,14 @@ class Client:
         """
         if address is None:
             address = self.public_key
-        print(f"Getting native balance for address {address}")
+        self.logger.info(f"Getting native balance for address {address}")
         try:
             balance_wei = self.connection.eth.get_balance(address)
             balance_eth = self.connection.from_wei(balance_wei, 'ether')
-            print(f"Native balance for address {address}: {balance_eth} ETH")
+            self.logger.info(f"Native balance for address {address}: {balance_eth} ETH")
             return balance_eth
         except Exception as e:
-            print(f"Error occurred while getting native balance for address {address}: {e}")
+            self.logger.warning(f"Error occurred while getting native balance for address {address}: {e}")
             return None
 
     def get_decimals(self, token_address: str) -> int | None:
@@ -167,17 +172,17 @@ class Client:
         :param token_address: Адрес токена.
         :return: Количество десятичных знаков токена.
         """
-        print(f"Getting decimals for token {token_address}")
+        self.logger.info(f"Getting decimals for token {token_address}")
         try:
             contract = self.connection.eth.contract(
                 address=Web3.to_checksum_address(token_address),
                 abi=ERC20_ABI
             )
             decimals = contract.functions.decimals().call()
-            print(f"Decimals for token {token_address}: {decimals}")
+            self.logger.info(f"Decimals for token {token_address}: {decimals}")
             return decimals
         except Exception as e:
-            print(f"Error occurred while getting decimals for token {token_address}: {e}")
+            self.logger.warning(f"Error occurred while getting decimals for token {token_address}: {e}")
             return None
 
     def get_allowance(self, token_address: str, spender: str) -> float | None:
@@ -188,7 +193,7 @@ class Client:
         :param spender: Адрес, которому разрешено тратить токены.
         :return: Лимит токенов в формате float с учетом decimals.
         """
-        print(f"Getting allowance for token {token_address} and spender {spender}")
+        self.logger.info(f"Getting allowance for token {token_address} and spender {spender}")
         try:
             decimals = self.get_decimals(token_address)
             contract = self.connection.eth.contract(
@@ -200,10 +205,10 @@ class Client:
                 Web3.to_checksum_address(spender)
             ).call()
             allowance_float = allowance / (10 ** decimals)
-            print(f"Allowance for token {token_address}: {allowance_float}")
+            self.logger.info(f"Allowance for token {token_address}: {allowance_float}")
             return allowance_float
         except Exception as e:
-            print(f"Error occurred while getting allowance for token {token_address}: {e}")
+            self.logger.warning(f"Error occurred while getting allowance for token {token_address}: {e}")
             return None
 
     def approve(self, token_address: str, spender: str, amount: float) -> HexBytes | None:
@@ -216,7 +221,7 @@ class Client:
         :return: Хеш транзакции.
         """
         try:
-            print(f"Approving {amount} tokens for spender {spender} on contract {token_address}")
+            self.logger.info(f"Approving {amount} tokens for spender {spender} on contract {token_address}")
 
             # Создание объекта контракта
             contract = self.connection.eth.contract(
@@ -256,10 +261,10 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            print(f"Approve transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"Approve transaction sent with hash {tx_hash.hex()}")
             return tx_hash
         except Exception as e:
-            print(f"Error occurred during approve: {e}")
+            self.logger.warning(f"Error occurred during approve: {e}")
             return None
 
     def permit_approve(self, token_address: str, spender: str) -> HexBytes | None:
@@ -271,7 +276,7 @@ class Client:
         :return: Хеш транзакции.
         """
         try:
-            print(f"Permit approving tokens for spender {spender} on contract {token_address}")
+            self.logger.info(f"Permit approving tokens for spender {spender} on contract {token_address}")
 
             # Создание объекта контракта
             contract = self.connection.eth.contract(
@@ -308,10 +313,10 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            print(f"Permit approve transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"Permit approve transaction sent with hash {tx_hash.hex()}")
             return tx_hash
         except Exception as e:
-            print(f"Error occurred during approve: {e}")
+            self.logger.warning(f"Error occurred during approve: {e}")
             return None
 
     def transfer_token(self, token_address: str, to_address: str, amount: float) -> HexBytes | None:
@@ -323,7 +328,7 @@ class Client:
         :param amount: Сумма для отправки в формате float.
         :return: Хеш транзакции.
         """
-        print(f"Transferring {amount} of token {token_address} to {to_address}")
+        self.logger.info(f"Transferring {amount} of token {token_address} to {to_address}")
 
         try:
             # Создание объекта контракта
@@ -364,8 +369,8 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            print(f"Token transfer transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"Token transfer transaction sent with hash {tx_hash.hex()}")
             return tx_hash
         except Exception as e:
-            print(f"Error occurred during token transfer: {e}")
+            self.logger.warning(f"Error occurred during token transfer: {e}")
             return None
