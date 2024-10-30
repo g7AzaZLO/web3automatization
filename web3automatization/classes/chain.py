@@ -36,7 +36,7 @@ class Chain:
         """
         for chain in chains.values():
             if (isinstance(identifier, str) and chain.name.lower() == identifier.lower()) or \
-               (isinstance(identifier, int) and chain.id == identifier):
+                    (isinstance(identifier, int) and chain.id == identifier):
                 return {
                     "name": chain.name,
                     "chain_id": chain.id,
@@ -66,7 +66,8 @@ chains = {
         42161,
         "https://arbitrum.llamarpc.com",
         "ETH",
-        ["https://arbitrum.drpc.org", "https://1rpc.io/arb", "https://arb-pokt.nodies.app","https://arbitrum.meowrpc.com"]),
+        ["https://arbitrum.drpc.org", "https://1rpc.io/arb", "https://arb-pokt.nodies.app",
+         "https://arbitrum.meowrpc.com"]),
     "base": Chain(
         'base',
         8453,
@@ -120,5 +121,12 @@ chains = {
         167000,
         "https://rpc.ankr.com/taiko",
         "ETH",
-        ["https://taiko-mainnet.rpc.porters.xyz/taiko-public", "https://taiko-rpc.publicnode.com", "https://taiko.drpc.org"])
+        ["https://taiko-mainnet.rpc.porters.xyz/taiko-public", "https://taiko-rpc.publicnode.com",
+         "https://taiko.drpc.org"])
 }
+
+poa_list = [
+    chains["polygon"].id,
+    chains['bsc'].id,
+    chains["gnosis"].id,
+]

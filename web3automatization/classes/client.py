@@ -1,7 +1,9 @@
 import logging
 from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
+from web3.middleware import ExtraDataToPOAMiddleware
 from web3automatization.abi.abis import ERC20_ABI
+from web3automatization.classes.chain import poa_list
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -37,6 +39,10 @@ class Client:
             raise ConnectionError(f"Failed to connect to the RPC at {self.rpc}")
 
         self.chain_id = self.connection.eth.chain_id
+        if self.chain_id in poa_list:
+            self.logger.info(f"Client is connected to a PoA chain (chain_id={self.chain_id})")
+            self.logger.info("Client is set middleware for PoA")
+            self.connection.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
 
         # Обработка приватного ключа
         self.private_key = bytes.fromhex(private_key[2:] if private_key.startswith('0x') else private_key)
