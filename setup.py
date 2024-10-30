@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-version = '0.0.2'
+version = '0.0.3'
 setup(
     name='web3automatization',
     version=version,
@@ -19,4 +19,9 @@ setup(
     license='Apache Licence, Version 2.0',
     package='web3automatization',
     install_requires=['web3', 'hexbytes', "requests"],
+    include_package_data=True,
+    packages=find_packages(),
+    package_data={
+        'web3automatization': ['**/*']
+    },
 )
