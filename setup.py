@@ -3,7 +3,7 @@ from setuptools import setup
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-version = '0.0.1'
+version = '0.0.2'
 setup(
     name='web3automatization',
     version=version,
