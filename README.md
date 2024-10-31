@@ -1,277 +1,283 @@
-# Документация к библиотеке `web3automatization`
+# Documentation for the `web3automatization` Library
 
-`web3automatization` — это библиотека для упрощения взаимодействия с блокчейн-сетями на основе EVM через web3py. Она предоставляет удобные методы для управления аккаунтом, отправки транзакций, работы с токенами ERC-20 и получения информации из сети. Так же предоставляет готовые моудли для взаимодействия с различными DeFi проектами
+`web3automatization` is a library for simplifying interactions with EVM-based blockchain networks through `web3py`. It provides convenient methods for account management, transaction sending, ERC-20 token operations, and retrieving network information. The library also includes ready-made modules for interacting with various DeFi projects.
 
-## Возможности
+## Features
 
-- Подключение к различным блокчейн-сетям через RPC.
-- Управление аккаунтом на основе приватного ключа.
-- Отправка нативных и ERC-20 токенов.
-- Выполнение операций `approve` для токенов ERC-20.
-- Получение балансов и информации о токенах.
-- Автоматическая оценка газа для транзакций.
+- Connect to various blockchain networks via RPC.
+- Manage accounts using private keys.
+- Send native and ERC-20 tokens.
+- Perform `approve` operations for ERC-20 tokens.
+- Retrieve balances and token information.
+- Automatically estimate gas for transactions.
 
-## Поддерживаемые проекты
+## Supported Projects
 - CrossCurve
-  - Кроссчейн свапы
-  - Инчейн свапы
+  - Cross-chain swaps
+  - In-chain swaps
 
-## Установка
+## Installation
 
 ```bash
 pip install web3automatization
 ```
-## Использование
 
-### Импорт клиента
+## Usage
+
+### Importing the Client
 
 ```python
 from web3automatization import Client
 ```
 
-### Инициализация клиента
+### Initializing the Client
 
 ```python
-private_key = "ваш приватный ключ"
-rpc_url = "URL RPC-сервера"
+private_key = "your private key"
+rpc_url = "RPC server URL"
 
 client = Client(private_key, rpc_url)
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `private_key` (str): Приватный ключ вашего аккаунта в шестнадцатеричном формате (с или без префикса '0x').
-- `rpc_url` (str): URL RPC-сервера блокчейн-сети.
-- `proxy` (str, необязательно): URL прокси-сервера, если требуется подключение через прокси.
+- `private_key` (str): Your account’s private key in hexadecimal format (with or without the '0x' prefix).
+- `rpc_url` (str): URL of the blockchain network’s RPC server.
+- `proxy` (str, optional): URL of the proxy server, if connection via proxy is needed.
 
-**Пример:**
+**Example:**
 
 ```python
 client = Client(
     private_key="0xc55af4055f19f388765840edee4e929efa333fb3b6a728979d1234567112c556",
-    rpc="https://ethereum-rpc.publicnode.com"
+    rpc="https://ethereum-rpc.publicnode.com",
     proxy="123.123.12.23:8080"
 )
 ```
 
-### Получение баланса аккаунта
+### Getting Account Balance
 
 ```python
 balance = client.get_native_balance()
-print(f"Баланс аккаунта: {balance} ETH")
+print(f"Account balance: {balance} ETH")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `address` (str, необязательно): Адрес для проверки баланса. Если не указан, используется публичный ключ клиента.
+- `address` (str, optional): Address to check the balance for. If not specified, the client’s public key is used.
 
-### Отправка нативного токена
+### Sending Native Token
 
 ```python
-to_address = "адрес получателя"
+to_address = "recipient address"
 amount = 0.1  # ETH
 
 tx_hash = client.send_native(to_address, amount)
-print(f"Транзакция отправлена. Хеш: {tx_hash}")
+print(f"Transaction sent. Hash: {tx_hash}")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `to_address` (str): Адрес получателя.
-- `amount` (float): Сумма для отправки в нативном токене сети.
+- `to_address` (str): Recipient address.
+- `amount` (float): Amount to send in the network’s native token.
 
-### Отправка ERC-20 токенов
+### Sending ERC-20 Tokens
 
 ```python
-token_address = "адрес токена ERC-20"
-to_address = "адрес получателя"
-amount = 50  # Количество токенов
+token_address = "ERC-20 token address"
+to_address = "recipient address"
+amount = 50  # Token amount
 
 tx_hash = client.transfer_token(token_address, to_address, amount)
-print(f"Транзакция отправлена. Хеш: {tx_hash}")
+print(f"Transaction sent. Hash: {tx_hash}")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `token_address` (str): Адрес смарт-контракта токена ERC-20.
-- `to_address` (str): Адрес получателя.
-- `amount` (float): Количество токенов для отправки.
+- `token_address` (str): Address of the ERC-20 token’s smart contract.
+- `to_address` (str): Recipient address.
+- `amount` (float): Amount of tokens to send.
 
-### Выполнение операции `approve`
+### Performing an `approve` Operation
 
 ```python
-token_address = "адрес токена ERC-20"
-spender_address = "адрес, которому разрешено тратить токены"
-amount = 1000  # Количество токенов для одобрения
+token_address = "ERC-20 token address"
+spender_address = "spender address"
+amount = 1000  # Amount to approve
 
 tx_hash = client.approve(token_address, spender_address, amount)
-print(f"Транзакция approve отправлена. Хеш: {tx_hash}")
+print(f"Approve transaction sent. Hash: {tx_hash}")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `token_address` (str): Адрес смарт-контракта токена ERC-20.
-- `spender` (str): Адрес, которому разрешено тратить токены.
-- `amount` (float): Количество токенов для одобрения.
+- `token_address` (str): Address of the ERC-20 token’s smart contract.
+- `spender` (str): Address allowed to spend tokens.
+- `amount` (float): Amount to approve.
 
-### Выполнение операции `permit approve`
-```Ptrhon
-token_address = "адрес токена ERC-20"
-spender_address = "адрес, которому разрешено тратить токены"
+### Performing a `permit approve` Operation
+
+```python
+token_address = "ERC-20 token address"
+spender_address = "spender address"
 
 tx_hash = client.permit_approve(token_address, spender_address)
-print(f"Транзакция approve отправлена. Хеш: {tx_hash.hex()}")
+print(f"Approve transaction sent. Hash: {tx_hash.hex()}")
 ```
-**Параметры:**
 
-- `token_address` (str): Адрес смарт-контракта токена ERC-20.
-- `spender` (str): Адрес, которому разрешено тратить токены.
+**Parameters:**
 
-### Получение информации о токене
+- `token_address` (str): Address of the ERC-20 token’s smart contract.
+- `spender` (str): Address allowed to spend tokens.
 
-#### Получение количества десятичных знаков (decimals)
+### Retrieving Token Information
+
+#### Retrieving Token Decimals
 
 ```python
-token_address = "адрес токена ERC-20"
+token_address = "ERC-20 token address"
 
 decimals = client.get_decimals(token_address)
-print(f"Decimals токена: {decimals}")
+print(f"Token decimals: {decimals}")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `token_address` (str): Адрес токена.
+- `token_address` (str): Token address.
 
-#### Получение одобренного лимита токенов (`allowance`)
+#### Retrieving Token Allowance
 
 ```python
-token_address = "адрес токена ERC-20"
-spender_address = "адрес, которому разрешено тратить токены"
+token_address = "ERC-20 token address"
+spender_address = "spender address"
 
 allowance = client.get_allowance(token_address, spender_address)
-print(f"Allowance токенов: {allowance}")
+print(f"Token allowance: {allowance}")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `token_address` (str): Адрес токена.
-- `spender` (str): Адрес, которому разрешено тратить токены.
+- `token_address` (str): Token address.
+- `spender` (str): Address allowed to spend tokens.
 
-### Получение номера транзакции(nonce) аккаунта
+### Retrieving Account Nonce
 
 ```python
 nonce = client.get_nonce()
-print(f"Nonce аккаунта: {nonce}")
+print(f"Account nonce: {nonce}")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `address` (str, необязательно): Адрес учетной записи. Если не указан, используется публичный ключ клиента.
+- `address` (str, optional): Account address. If not specified, the client’s public key is used.
 
-### Получение информации о транзакции
+### Retrieving Transaction Information
 
 ```python
-tx_hash = "хеш транзакции в HexBytes"
+tx_hash = "transaction hash in HexBytes"
 
 receipt = client.get_transaction_receipt(tx_hash)
-print(f"Статус транзакции: {receipt['status']}")
+print(f"Transaction status: {receipt['status']}")
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `transaction_hash` (HexBytes): Хеш транзакции.
+- `transaction_hash` (HexBytes): Transaction hash.
 
-## Полная структура класса `Client`
+## Full `Client` Class Structure
 
 ```python
 class Client:
     def __init__(self, private_key: str, rpc: str, proxy: str = None):
-        # Инициализация клиента
+        # Client initialization
 
     def __del__(self) -> None:
-        # Деструктор клиента
+        # Client destructor
 
     def __str__(self) -> str:
-        # Строковое представление клиента
+        # String representation of the client
 
     def get_nonce(self, address: str = None) -> int | None:
-        # Получение nonce для адреса
+        # Retrieve nonce for an address
 
     def send_transaction(self, transaction: dict) -> str:
-        # Подписание и отправка транзакции
+        # Sign and send transaction
 
     def send_native(self, to_address: str, amount: float) -> str:
-        # Отправка ETH на указанный адрес
+        # Send ETH to a specified address
 
     def get_transaction_receipt(self, transaction_hash: str | HexBytes) -> dict:
-        # Получение информации о транзакции
+        # Retrieve transaction information
 
     def get_native_balance(self, address: str = None) -> float | None:
-        # Получение баланса в ETH для адреса
+        # Get ETH balance for an address
 
     def get_decimals(self, token_address: str) -> int | None:
-        # Получение decimals для токена ERC-20
+        # Retrieve decimals for an ERC-20 token
 
     def get_allowance(self, token_address: str, spender: str) -> float | None:
-        # Получение allowance для токена ERC-20
+        # Retrieve token allowance for an ERC-20 token
 
     def approve(self, token_address: str, spender: str, amount: float) -> str | None:
-        # Выполнение операции approve для токена ERC-20
+        # Perform approve operation for an ERC-20 token
 
     def transfer_token(self, token_address: str, to_address: str, amount: float) -> str | None:
-        # Отправка токена ERC-20 на указанный адрес
+        # Send ERC-20 token to a specified address
 ```
 
-## Пример полного использования
+## Example of Full Usage
 
 ```python
 from web3automatization import Client
 
-# Инициализация клиента
+# Initialize client
 client = Client(
     private_key="0xc55af4055f19f388765840edee4e929efa333fb3b6a728979d1234567112c556",
     rpc="https://ethereum-rpc.publicnode.com",
     proxy="123.123.12.23:8080"
 )
 
-# Получение баланса
+# Retrieve balance
 balance = client.get_native_balance()
-print(f"Баланс: {balance} ETH")
+print(f"Balance: {balance} ETH")
 
-# Отправка 0.05 ETH на другой адрес
+# Send 0.05 ETH to another address
 to_address = "0xRecipientAddressHere"
-tx_hash = client.send_eth(to_address, 0.05)
-print(f"ETH отправлен. Хеш транзакции: {tx_hash}")
+tx_hash = client.send_native(to_address, 0.05)
+print(f"ETH sent. Transaction hash: {tx_hash}")
 
-# Получение информации о токене
+# Retrieve token information
 token_address = "0xTokenAddressHere"
 decimals = client.get_decimals(token_address)
-print(f"Decimals токена: {decimals}")
+print(f"Token decimals: {decimals}")
 
-# Отправка 100 токенов на другой адрес
+# Send 100 tokens to another address
 tx_hash = client.transfer_token(token_address, to_address, 100)
-print(f"Токены отправлены. Хеш транзакции: {tx_hash}")
+print(f"Tokens sent. Transaction hash: {tx_hash}")
 
-# Выполнение approve на 500 токенов
+# Perform approve for 500 tokens
 spender_address = "0xSpenderAddressHere"
 tx_hash = client.approve(token_address, spender_address, 500)
-print(f"Approve выполнен. Хеш транзакции: {tx_hash}")
+print(f"Approve completed. Transaction hash: {tx_hash}")
 
-# Получение allowance
+# Retrieve allowance
 allowance = client.get_allowance(token_address, spender_address)
-print(f"Allowance для spender: {allowance}")
+print(f"Allowance for spender: {allowance}")
 ```
-## Пример использования модуля CrossCurve
 
-### Импорт модуля
-```Python
+## Example Usage of CrossCurve Module
+
+### Import the Module
+
+```python
 from web3automatization import Client, chains
-from web3automatization.modules.crosscurve.logic import get_swap_route, get_estimate,create_swap_transaction,send_crosscurve_swap_transaction
+from web3automatization.modules.crosscurve.logic import get_swap_route, get_estimate, create_swap_transaction, send_crosscurve_swap_transaction
 ```
 
-## Поиск роута
-```Python
-chain_in = chains["optimism"] 
+### Finding the Route
+
+```python
+chain_in = chains["optimism"]
 token_in = "USDT"
 chain_out = chains["arbitrum"]
 token_out = "USDC.e"
@@ -281,66 +287,79 @@ slippage = 0.1
 route = get_swap_route(chain_in, token_in, chain_out, token_out, amount, slippage)["route"]
 ```
 
-**Параметры:**
+**Parameters:**
 
-- `chain_in` (Chain): Объект класса Chain из которого будет происходить свап.
-- 'token_in' (str): Имя токена из которого будет происходить свап.
-- 'chain_out' (Chain): Объект класса Chain в который будем свапать.
-- 'token_out' (str): Имя токена в который будет происходить свап.
-- 'amount' (float): Количество монет, которое будем свапать.
-- 'slippage' (float): Процент проскальзывания 
+- `chain_in` (Chain): Chain object for the swap’s origin.
+- `token_in` (str): Name of the token to be swapped from.
+- `chain_out` (Chain): Chain object for the swap’s destination.
+- `token_out` (str): Name of the token to be swapped to.
+- `amount` (float): Amount to be swapped.
+- `slippage` (float): Slippage percentage.
 
-**Получишийся роут:**
+**Resulting Route:**
+
 ```commandline
-1000 USDT из сети optimism в USDC.e в сети arbitrum с максимальныи проскальзыванием 0.1%
+1000 USDT from Optimism to USDC.e on Arbitrum with max slippage of 0.1%
 ```
 
-## Получение estimate транзакции
-```Python
+### Getting Transaction Estimate
+
+```python
 estimate = get_estimate(route)
 ```
-**Параметры**
-- "route" (list): получившийся путь из get_swap_route
 
-## Формирование свап-транзакции
-```Python
-swap_tnx = create_swap_transaction(sender, routing, estimate, recipient, client)
-```
-**Параметры:**
-- "sender" (str): Адрес с которого будет происходить транзакция
-- "routing" (list): Путь транзакции, который мы получаем из get_swap_route()
-- "estimate" (dict): estimate для транзакции, полученый из get_estimate
-- "recipient" (str, необязательно): Адрес на который будет уходить транзакция
-- "client" (Сlient, необязательно): Объект класса Client, если его передать, то будет исспользоваться прокси клиента
+**Parameters:**
 
-## Подписание и отправка свап транзакции
-```Python
-swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate)
+- `route` (list): Route obtained from `get_swap_route`.
+
+### Creating the Swap Transaction
+
+```python
+swap_txn = create
+
+_swap_transaction(sender, route, estimate, recipient, client)
 ```
-**Параметры:**
-- "client" (Client): Объект класса клиент, приватным ключом которого будет подписываться транзакция
-- "swap_thx" (dict): Свап транзакция, полученая из create_swap_transaction(), которую будем подписывать
-- "estimate" (dict): estimate транзакции, полученный из get_estimate()
+
+**Parameters:**
+
+- `sender` (str): Address from which the transaction will be sent.
+- `route` (list): Transaction path from `get_swap_route()`.
+- `estimate` (dict): Estimate obtained from `get_estimate`.
+- `recipient` (str, optional): Address to which the transaction will be sent.
+- `client` (Client, optional): Client object to use the client’s proxy.
+
+### Signing and Sending the Swap Transaction
+
+```python
+swap = send_crosscurve_swap_transaction(client, swap_txn, estimate)
+```
+
+**Parameters:**
+
+- `client` (Client): Client object to sign the transaction.
+- `swap_txn` (dict): Swap transaction created with `create_swap_transaction()`.
+- `estimate` (dict): Transaction estimate from `get_estimate()`.
+
 ---
 
-## Полное использование
-```Python
+## Complete Usage
+
+```python
 from web3automatization.classes.chain import chains
 from web3automatization.classes.client import Client
-from web3automatization.modules.crosscurve.logic import get_swap_route, get_estimate, create_swap_transaction, \
-    send_crosscurve_swap_transaction
+from web3automatization.modules.crosscurve.logic import get_swap_route, get_estimate, create_swap_transaction, send_crosscurve_swap_transaction
 
-client = Client("0x...", chains["ethereum"].rpc, "123.123.123.12:8080") #-  создаем клиента
-route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "USDC.e", 1000, 0.1)["route"] #- ищем роут из оптимизм usdt в арбитрум usdc.e, количество 1000$, проскальзывание 0.1%
-estimate = get_estimate(route) #- получаем estimate
-swap_tnx = create_swap_transaction(client.public_key, route, estimate) #- формируем транзакцию
-swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate) #- подписываем и отправляем транзакцию
+client = Client("0x...", chains["ethereum"].rpc, "123.123.123.12:8080")  # Initialize client
+route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "USDC.e", 1000, 0.1)["route"]  # Find route from Optimism USDT to Arbitrum USDC.e, amount 1000, slippage 0.1%
+estimate = get_estimate(route)  # Get estimate
+swap_txn = create_swap_transaction(client.public_key, route, estimate)  # Create transaction
+swap = send_crosscurve_swap_transaction(client, swap_txn, estimate)  # Sign and send transaction
 ```
 
-## Заключение
+## Conclusion
 
-Библиотека предоставляет простой и интуитивно понятный интерфейс для взаимодействия с EVM чейнами. Она упрощает выполнение часто используемых операций и может быть расширена для поддержки дополнительной функциональности в соответствии с вашими потребностями.
+The library provides a simple and intuitive interface for interacting with EVM chains. It simplifies common operations and can be extended to support additional functionality as needed.
 
-Если у вас есть предложения по улучшению или вы нашли ошибку, пожалуйста, создайте issue или pull request в репозитории проекта.
+If you have suggestions for improvements or find any issues, please open an issue or pull request on the project’s repository.
 
-От сибилов - для сибилов
+*From sybils to sybils*
