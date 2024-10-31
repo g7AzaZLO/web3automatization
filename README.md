@@ -1,3 +1,4 @@
+[Читать на русском](README_RU.md)
 # Documentation for the `web3automatization` Library
 
 `web3automatization` is a library for simplifying interactions with EVM-based blockchain networks through `web3py`. It provides convenient methods for account management, transaction sending, ERC-20 token operations, and retrieving network information. The library also includes ready-made modules for interacting with various DeFi projects.
