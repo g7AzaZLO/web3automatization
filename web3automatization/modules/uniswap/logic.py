@@ -1,4 +1,3 @@
-from web3automatization.classes.chain import chains
 from web3automatization.classes.client import Client
 from web3automatization.abi.abis import UNISWAP_QUOTER_ABI, UNISWAP_ROUTER_ABI
 from web3automatization.modules.uniswap.config import QUOTER_ADDRESS, ROUTER_ADDRESS
