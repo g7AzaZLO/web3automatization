@@ -142,7 +142,7 @@ class Client:
             self.logger.warning(f"Error occurred while sending ETH: {e}")
             return None
 
-    def get_transaction_receipt(self, transaction_hash: str) -> dict:
+    def get_transaction_receipt(self, transaction_hash: str | HexBytes) -> dict:
         """
         Получает информацию о транзакции на основе её хеша.
 

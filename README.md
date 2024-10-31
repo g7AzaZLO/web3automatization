@@ -72,7 +72,7 @@ to_address = "адрес получателя"
 amount = 0.1  # ETH
 
 tx_hash = client.send_native(to_address, amount)
-print(f"Транзакция отправлена. Хеш: {tx_hash.hex()}")
+print(f"Транзакция отправлена. Хеш: {tx_hash}")
 ```
 
 **Параметры:**
@@ -88,7 +88,7 @@ to_address = "адрес получателя"
 amount = 50  # Количество токенов
 
 tx_hash = client.transfer_token(token_address, to_address, amount)
-print(f"Транзакция отправлена. Хеш: {tx_hash.hex()}")
+print(f"Транзакция отправлена. Хеш: {tx_hash}")
 ```
 
 **Параметры:**
@@ -105,7 +105,7 @@ spender_address = "адрес, которому разрешено тратит�
 amount = 1000  # Количество токенов для одобрения
 
 tx_hash = client.approve(token_address, spender_address, amount)
-print(f"Транзакция approve отправлена. Хеш: {tx_hash.hex()}")
+print(f"Транзакция approve отправлена. Хеш: {tx_hash}")
 ```
 
 **Параметры:**
@@ -197,13 +197,13 @@ class Client:
     def get_nonce(self, address: str = None) -> int | None:
         # Получение nonce для адреса
 
-    def send_transaction(self, transaction: dict) -> HexBytes:
+    def send_transaction(self, transaction: dict) -> str:
         # Подписание и отправка транзакции
 
-    def send_native(self, to_address: str, amount: float) -> HexBytes:
+    def send_native(self, to_address: str, amount: float) -> str:
         # Отправка ETH на указанный адрес
 
-    def get_transaction_receipt(self, transaction_hash: HexBytes) -> dict:
+    def get_transaction_receipt(self, transaction_hash: str | HexBytes) -> dict:
         # Получение информации о транзакции
 
     def get_native_balance(self, address: str = None) -> float | None:
@@ -215,10 +215,10 @@ class Client:
     def get_allowance(self, token_address: str, spender: str) -> float | None:
         # Получение allowance для токена ERC-20
 
-    def approve(self, token_address: str, spender: str, amount: float) -> HexBytes | None:
+    def approve(self, token_address: str, spender: str, amount: float) -> str | None:
         # Выполнение операции approve для токена ERC-20
 
-    def transfer_token(self, token_address: str, to_address: str, amount: float) -> HexBytes | None:
+    def transfer_token(self, token_address: str, to_address: str, amount: float) -> str | None:
         # Отправка токена ERC-20 на указанный адрес
 ```
 
@@ -230,7 +230,7 @@ from web3automatization import Client
 # Инициализация клиента
 client = Client(
     private_key="0xc55af4055f19f388765840edee4e929efa333fb3b6a728979d1234567112c556",
-    rpc="https://ethereum-rpc.publicnode.com"
+    rpc="https://ethereum-rpc.publicnode.com",
     proxy="123.123.12.23:8080"
 )
 
@@ -241,7 +241,7 @@ print(f"Баланс: {balance} ETH")
 # Отправка 0.05 ETH на другой адрес
 to_address = "0xRecipientAddressHere"
 tx_hash = client.send_eth(to_address, 0.05)
-print(f"ETH отправлен. Хеш транзакции: {tx_hash.hex()}")
+print(f"ETH отправлен. Хеш транзакции: {tx_hash}")
 
 # Получение информации о токене
 token_address = "0xTokenAddressHere"
@@ -250,12 +250,12 @@ print(f"Decimals токена: {decimals}")
 
 # Отправка 100 токенов на другой адрес
 tx_hash = client.transfer_token(token_address, to_address, 100)
-print(f"Токены отправлены. Хеш транзакции: {tx_hash.hex()}")
+print(f"Токены отправлены. Хеш транзакции: {tx_hash}")
 
 # Выполнение approve на 500 токенов
 spender_address = "0xSpenderAddressHere"
 tx_hash = client.approve(token_address, spender_address, 500)
-print(f"Approve выполнен. Хеш транзакции: {tx_hash.hex()}")
+print(f"Approve выполнен. Хеш транзакции: {tx_hash}")
 
 # Получение allowance
 allowance = client.get_allowance(token_address, spender_address)
