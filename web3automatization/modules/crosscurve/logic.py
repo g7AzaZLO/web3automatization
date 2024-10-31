@@ -170,7 +170,7 @@ def create_swap_transaction(sender: str, routing: dict, estimate: dict, recipien
     return None
 
 
-def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dict) -> dict | None:
+def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dict) -> str | None:
     """
     Выполняет транзакцию с использованием предоставленных данных.
 
@@ -203,7 +203,7 @@ def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dic
             'gas': client.connection.eth.estimate_gas({
                 'to': UNIFIED_ROUTER_V2,
                 'from': client.public_key,
-                'data': router.encodeABI(fn_name="start", args=args),
+                'data': router.encodeABI("start", args=args),
                 'value': value
             }),
             'gasPrice': client.connection.eth.gas_price,
@@ -211,12 +211,10 @@ def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dic
         })
 
         print("Try to send swap transaction")
-        signed_tx = client.account.sign_transaction(transaction)
-        tx_hash = client.connection.eth.send_raw_transaction(signed_tx.rawTransaction)
-        receipt = client.connection.eth.wait_for_transaction_receipt(tx_hash)
+        hash = client.send_transaction(transaction)
 
-        print(f"Transaction successful with hash: {tx_hash.hex()}")
-        return receipt
+        print(f"Transaction successful with hash: {hash}")
+        return hash
 
     except Exception as e:
         print(f"Error occurred while executing transaction: {e}")

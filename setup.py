@@ -18,7 +18,10 @@ setup(
     download_url='https://github.com/g7AzaZLO/web3automatization/archive/v{}.zip'.format(version),
     license='Apache Licence, Version 2.0',
     package='web3automatization',
-    install_requires=['web3', 'hexbytes', "requests"],
+    install_requires=[
+        'web3==7.4.0',
+        'hexbytes==1.2.1',
+        'requests==2.32.3'],
     include_package_data=True,
     packages=find_packages(),
     package_data={

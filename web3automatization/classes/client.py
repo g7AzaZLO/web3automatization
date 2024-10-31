@@ -88,7 +88,7 @@ class Client:
             self.logger.warning(f"Error occurred while getting nonce for address {address}: {e}")
             return None
 
-    def send_transaction(self, transaction: dict) -> HexBytes:
+    def send_transaction(self, transaction: dict) -> str:
         """
         Подписывает и отправляет транзакцию в сеть, возвращая её хеш.
 
@@ -99,9 +99,9 @@ class Client:
         signed_transaction = self.account.sign_transaction(transaction)
         tx_hash = self.connection.eth.send_raw_transaction(signed_transaction.raw_transaction)
         self.logger.info(f"Transaction sent with hash {tx_hash.hex()}")
-        return tx_hash
+        return "0x"+tx_hash.hex()
 
-    def send_native(self, to_address: str, amount: float) -> HexBytes | None:
+    def send_native(self, to_address: str, amount: float) -> str | None:
         """
         Отправляет ETH на указанный адрес с автоматической оценкой газа.
 
@@ -136,20 +136,20 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            self.logger.info(f"ETH transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"ETH transaction sent with hash {tx_hash}")
             return tx_hash
         except Exception as e:
             self.logger.warning(f"Error occurred while sending ETH: {e}")
             return None
 
-    def get_transaction_receipt(self, transaction_hash: HexBytes) -> dict:
+    def get_transaction_receipt(self, transaction_hash: str) -> dict:
         """
         Получает информацию о транзакции на основе её хеша.
 
         :param transaction_hash: Хеш транзакции.
         :return: Словарь с информацией о транзакции.
         """
-        self.logger.info(f"Getting transaction receipt for hash {transaction_hash.hex()}")
+        self.logger.info(f"Getting transaction receipt for hash {transaction_hash}")
         return self.connection.eth.get_transaction_receipt(transaction_hash)
 
     def get_native_balance(self, address: str = None) -> float | None:
@@ -217,7 +217,7 @@ class Client:
             self.logger.warning(f"Error occurred while getting allowance for token {token_address}: {e}")
             return None
 
-    def approve(self, token_address: str, spender: str, amount: float) -> HexBytes | None:
+    def approve(self, token_address: str, spender: str, amount: float) -> str | None:
         """
         Выполняет approve транзакцию, позволяя spender расходовать до amount токенов от имени владельца.
 
@@ -267,13 +267,13 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            self.logger.info(f"Approve transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"Approve transaction sent with hash {tx_hash}")
             return tx_hash
         except Exception as e:
             self.logger.warning(f"Error occurred during approve: {e}")
             return None
 
-    def permit_approve(self, token_address: str, spender: str) -> HexBytes | None:
+    def permit_approve(self, token_address: str, spender: str) -> str | None:
         """
         Выполняет permit approve транзакцию, позволяя spender расходовать бесконечно токенов от имени владельца.
 
@@ -319,13 +319,13 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            self.logger.info(f"Permit approve transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"Permit approve transaction sent with hash {tx_hash}")
             return tx_hash
         except Exception as e:
             self.logger.warning(f"Error occurred during approve: {e}")
             return None
 
-    def transfer_token(self, token_address: str, to_address: str, amount: float) -> HexBytes | None:
+    def transfer_token(self, token_address: str, to_address: str, amount: float) -> str | None:
         """
         Отправляет ERC-20 токены на указанный адрес.
 
@@ -375,7 +375,7 @@ class Client:
 
             # Подписывание и отправка транзакции
             tx_hash = self.send_transaction(transaction)
-            self.logger.info(f"Token transfer transaction sent with hash {tx_hash.hex()}")
+            self.logger.info(f"Token transfer transaction sent with hash {tx_hash}")
             return tx_hash
         except Exception as e:
             self.logger.warning(f"Error occurred during token transfer: {e}")
