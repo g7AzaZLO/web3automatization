@@ -364,3 +364,5 @@ The library provides a simple and intuitive interface for interacting with EVM c
 If you have suggestions for improvements or find any issues, please open an issue or pull request on the project’s repository.
 
 *From sybils to sybils*
+
+G7[telegram]: https://t.me/g7team_en
