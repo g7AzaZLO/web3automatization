@@ -1,3 +1,4 @@
+import logging
 import requests
 from web3 import Web3
 from web3automatization.abi.abis import CROSSCURVE_START_ABI
@@ -5,6 +6,8 @@ from web3automatization.classes.chain import Chain
 from web3automatization.classes.client import Client
 from config import crosscurve_tokens, UNIFIED_ROUTER_V2
 
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
 
 def find_token(chain: Chain, ticker_or_address: str) -> dict | None:
     """
@@ -14,11 +17,13 @@ def find_token(chain: Chain, ticker_or_address: str) -> dict | None:
     :param ticker_or_address: Тикер токена или адрес контракта.
     :return: Словарь с данными токена, если найден, иначе None.
     """
+    logger.info(f"Поиск токена {ticker_or_address} в сети {chain.name}")
     for token in crosscurve_tokens:
         if token['chain'].lower() == chain.name.lower() and (
                 token['ticker'].lower() == ticker_or_address.lower() or
                 token['address'].lower() == ticker_or_address.lower()):
             return token
+    logger.warning("Токен не найден в списке.")
     return None
 
 
@@ -38,17 +43,15 @@ def get_swap_route(chain_in: Chain, token_in_identifier: str, chain_out: Chain, 
     :return: Словарь с информацией о маршруте, если найден подходящий маршрут, иначе None.
     """
     try:
-        # Поиск данных входного и выходного токенов
         token_in = find_token(chain_in, token_in_identifier)
         token_out = find_token(chain_out, token_out_identifier)
 
         if not token_in or not token_out:
-            print("Не удалось найти один или оба токена в списке.")
+            logger.warning("Не удалось найти один или оба токена в списке.")
             return None
 
-        print(f"Checking swap route from {token_in['address']} to {token_out['address']}")
+        logger.info(f"Checking swap route from {token_in['address']} to {token_out['address']}")
 
-        # Масштабирование amountIn с учетом decimals
         decimals_in = token_in.get('decimals')
         amount_in_scaled = str(int(amount_in * (10 ** decimals_in)))
 
@@ -78,7 +81,7 @@ def get_swap_route(chain_in: Chain, token_in_identifier: str, chain_out: Chain, 
                 amount_out = amount_out_raw / (10 ** decimals_out)
                 total_fee = float(data[0].get("totalFee").get("amount"))
 
-                print(f"SWAP ROUTE FOUND: in {amount_in} -> out {amount_out}")
+                logger.info(f"SWAP ROUTE FOUND: in {amount_in} -> out {amount_out}")
                 return {
                     "from_token": token_in["ticker"],
                     "from_chain": chain_in.name,
@@ -89,12 +92,12 @@ def get_swap_route(chain_in: Chain, token_in_identifier: str, chain_out: Chain, 
                     "route": data[0],
                     "fee": total_fee
                 }
-            print("Response data is empty")
+            logger.warning("Response data is empty")
             return None
-        print(f"Response status != 200: {response.status_code}")
+        logger.warning(f"Response status != 200: {response.status_code}")
         return None
     except Exception as e:
-        print(f"Request error: {e}")
+        logger.error(f"Request error: {e}")
         return None
 
 
@@ -121,9 +124,9 @@ def get_estimate(route: list, client: Client = None) -> dict | None:
         estimate = response.json()
         return estimate
     except requests.exceptions.HTTPError as e:
-        print(f"HTTP error occurred: {e}")
+        logger.error(f"HTTP error occurred: {e}")
     except requests.exceptions.RequestException as e:
-        print(f"Request error occurred: {e}")
+        logger.error(f"Request error occurred: {e}")
     return None
 
 
@@ -164,9 +167,9 @@ def create_swap_transaction(sender: str, routing: dict, estimate: dict,
         raw_tx = response.json()
         return raw_tx
     except requests.exceptions.HTTPError as e:
-        print(f"HTTP error occurred: {e}")
+        logger.error(f"HTTP error occurred: {e}")
     except requests.exceptions.RequestException as e:
-        print(f"Request error occurred: {e}")
+        logger.error(f"Request error occurred: {e}")
     return None
 
 
@@ -203,19 +206,20 @@ def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dic
             'gas': client.connection.eth.estimate_gas({
                 'to': UNIFIED_ROUTER_V2,
                 'from': client.public_key,
-                'data': router.encodeABI("start", args=args),
+                'data': router.encode_abi("start", args=args),
                 'value': value
             }),
             'gasPrice': client.connection.eth.gas_price,
             'nonce': client.get_nonce(client.public_key),
         })
 
-        print("Try to send swap transaction")
+        logger.info("Try to send swap transaction")
         hash = client.send_transaction(transaction)
 
-        print(f"Transaction successful with hash: {hash}")
+        logger.info(f"Transaction successful with hash: {hash}")
+        return hash
         return hash
 
     except Exception as e:
-        print(f"Error occurred while executing transaction: {e}")
+        logger.error(f"Error occurred while executing transaction: {e}")
         return None
