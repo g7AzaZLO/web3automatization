@@ -1,3 +1,4 @@
 web3==7.4.0
 hexbytes==1.2.1
 requests==2.32.3
+aiosqlite==0.20.0

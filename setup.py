@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-version = '0.0.5'
+version = '0.0.6'
 setup(
     name='web3automatization',
     version=version,
@@ -21,7 +21,8 @@ setup(
     install_requires=[
         'web3==7.4.0',
         'hexbytes==1.2.1',
-        'requests==2.32.3'],
+        'requests==2.32.3',
+        'aiosqlite==0.20.0'],
     include_package_data=True,
     packages=find_packages(),
     package_data={
