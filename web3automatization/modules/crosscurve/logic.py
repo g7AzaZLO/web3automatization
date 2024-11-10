@@ -130,13 +130,11 @@ def get_estimate(route: list, client: Client = None) -> dict | None:
     return None
 
 
-def create_swap_transaction(sender: str, routing: dict, estimate: dict,
-                            client: Client = None) -> dict | None:
+def create_swap_transaction(sender: str, routing: dict, estimate: dict, client: Client = None) -> dict | None:
     """
     Создает транзакцию с использованием предоставленных параметров и отправляет запрос на создание транзакции.
 
     :param sender: Адрес отправителя.
-    :param recipient: Адрес получателя.
     :param routing: Данные маршрутизации.
     :param estimate: Оценка маршрута.
     :param client: Опциональный объект клиента с прокси-настройками.
