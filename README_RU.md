@@ -282,14 +282,20 @@ slippage = 0.1
 route = get_swap_route(chain_in, token_in, chain_out, token_out, amount, slippage)["route"]
 ```
 
+Так же вместо тикера вы можете использовать адрес токена
+
+```Python
+route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", 1000, 0.1)["route"]
+```
+
 **Параметры:**
 
 - `chain_in` (Chain): Объект класса Chain из которого будет происходить свап.
-- 'token_in' (str): Имя токена из которого будет происходить свап.
-- 'chain_out' (Chain): Объект класса Chain в который будем свапать.
-- 'token_out' (str): Имя токена в который будет происходить свап.
-- 'amount' (float): Количество монет, которое будем свапать.
-- 'slippage' (float): Процент проскальзывания 
+- `token_in` (str): Имя токена из которого будет происходить свап.
+- `chain_out` (Chain): Объект класса Chain в который будем свапать.
+- `token_out` (str): Имя токена в который будет происходить свап.
+- `amount` (float): Количество монет, которое будем свапать.
+- `slippage` (float): Процент проскальзывания 
 
 **Получишийся роут:**
 ```commandline
@@ -301,27 +307,26 @@ route = get_swap_route(chain_in, token_in, chain_out, token_out, amount, slippag
 estimate = get_estimate(route)
 ```
 **Параметры**
-- "route" (list): получившийся путь из get_swap_route
+- `route` (list): получившийся путь из get_swap_route
 
 ## Формирование свап-транзакции
 ```Python
 swap_tnx = create_swap_transaction(sender, routing, estimate, recipient, client)
 ```
 **Параметры:**
-- "sender" (str): Адрес с которого будет происходить транзакция
-- "routing" (list): Путь транзакции, который мы получаем из get_swap_route()
-- "estimate" (dict): estimate для транзакции, полученый из get_estimate
-- "recipient" (str, необязательно): Адрес на который будет уходить транзакция
-- "client" (Сlient, необязательно): Объект класса Client, если его передать, то будет исспользоваться прокси клиента
+- `sender` (str): Адрес с которого будет происходить транзакция
+- `routing` (list): Путь транзакции, который мы получаем из get_swap_route()
+- `estimate` (dict): estimate для транзакции, полученый из get_estimate
+- `client` (Сlient, необязательно): Объект класса Client, если его передать, то будет исспользоваться прокси клиента
 
 ## Подписание и отправка свап транзакции
 ```Python
 swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate)
 ```
 **Параметры:**
-- "client" (Client): Объект класса клиент, приватным ключом которого будет подписываться транзакция
-- "swap_thx" (dict): Свап транзакция, полученая из create_swap_transaction(), которую будем подписывать
-- "estimate" (dict): estimate транзакции, полученный из get_estimate()
+- `client` (Client): Объект класса клиент, приватным ключом которого будет подписываться транзакция
+- `swap_thx` (dict): Свап транзакция, полученая из create_swap_transaction(), которую будем подписывать
+- `estimate` (dict): estimate транзакции, полученный из get_estimate()
 ---
 
 ## Полное использование

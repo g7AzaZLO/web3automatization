@@ -127,7 +127,7 @@ def get_estimate(route: list, client: Client = None) -> dict | None:
     return None
 
 
-def create_swap_transaction(sender: str, routing: dict, estimate: dict, recipient: str = UNIFIED_ROUTER_V2,
+def create_swap_transaction(sender: str, routing: dict, estimate: dict,
                             client: Client = None) -> dict | None:
     """
     Создает транзакцию с использованием предоставленных параметров и отправляет запрос на создание транзакции.
@@ -149,7 +149,7 @@ def create_swap_transaction(sender: str, routing: dict, estimate: dict, recipien
 
     tx_create_params = {
         "from": sender,
-        "recipient": recipient,
+        "recipient": sender,
         "routing": routing,
         "estimate": estimate,
     }

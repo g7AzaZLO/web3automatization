@@ -8,3 +8,6 @@ route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "USDC.e",
 estimate = get_estimate(route) #- получаем estimate
 swap_tnx = create_swap_transaction(client.public_key, route, estimate) #- формируем транзакцию
 swap = send_crosscurve_swap_transaction(client, swap_tnx, estimate) #- подписываем и отправляем транзакцию
+
+# u can use ticker or address
+route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", 1000, 0.1)["route"]

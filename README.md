@@ -288,6 +288,12 @@ slippage = 0.1
 route = get_swap_route(chain_in, token_in, chain_out, token_out, amount, slippage)["route"]
 ```
 
+You can also use the address of the token 
+
+```Python
+route = get_swap_route(chains["optimism"], "USDT", chains["arbitrum"], "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", 1000, 0.1)["route"]
+```
+
 **Parameters:**
 
 - `chain_in` (Chain): Chain object for the swap’s origin.
@@ -316,9 +322,7 @@ estimate = get_estimate(route)
 ### Creating the Swap Transaction
 
 ```python
-swap_txn = create
-
-_swap_transaction(sender, route, estimate, recipient, client)
+swap_txn = create_swap_transaction(sender, route, estimate, client)
 ```
 
 **Parameters:**
@@ -326,7 +330,6 @@ _swap_transaction(sender, route, estimate, recipient, client)
 - `sender` (str): Address from which the transaction will be sent.
 - `route` (list): Transaction path from `get_swap_route()`.
 - `estimate` (dict): Estimate obtained from `get_estimate`.
-- `recipient` (str, optional): Address to which the transaction will be sent.
 - `client` (Client, optional): Client object to use the client’s proxy.
 
 ### Signing and Sending the Swap Transaction
