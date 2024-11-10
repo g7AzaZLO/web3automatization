@@ -218,7 +218,6 @@ def send_crosscurve_swap_transaction(client: Client, raw_tx: dict, estimate: dic
 
         logger.info(f"Transaction successful with hash: {hash}")
         return hash
-        return hash
 
     except Exception as e:
         logger.error(f"Error occurred while executing transaction: {e}")
