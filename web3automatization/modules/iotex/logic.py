@@ -1,7 +1,8 @@
 from web3 import Web3
 from web3automatization.abi.abis import IOTEX_ABI
 from web3automatization.classes.client import Client
-from web3automatization.modules.iotex.config import IOTEX_POLYGON_DEPOSIT_CONTRACT, POLYGON_NATIVE_POL
+from web3automatization.modules.iotex.config import IOTEX_POLYGON_DEPOSIT_CONTRACT, POLYGON_NATIVE_POL, \
+    IOTEX_WITHDRAW_CONTRACT, FIX_AMOUNT_FOR_WITHDRAW
 
 
 def get_deposit_in_iotex_from_polygon_transaction(client: Client, amount_in: float, token_address: str = POLYGON_NATIVE_POL):
@@ -22,7 +23,7 @@ def get_deposit_in_iotex_from_polygon_transaction(client: Client, amount_in: flo
         'from': client.public_key,
         'value': value,
         'gas': client.connection.eth.estimate_gas({
-            'to': IOTEX_POLYGON_DEPOSIT_CONTRACT,
+            'to': Web3.to_checksum_address(IOTEX_POLYGON_DEPOSIT_CONTRACT),
             'from': client.public_key,
             'data': contract.encode_abi("depositTo", args=params),
             'value': value
@@ -34,7 +35,7 @@ def get_deposit_in_iotex_from_polygon_transaction(client: Client, amount_in: flo
 
 def get_withdraw_in_polygon_from_iotex_transaction(client: Client, amount_in: float, token_address: str = POLYGON_NATIVE_POL):
     amount_in_scaled = amount_in * (10 ** client.get_decimals(token_address))
-    contract = client.connection.eth.contract(address=Web3.to_checksum_address(IOTEX_POLYGON_DEPOSIT_CONTRACT), abi=IOTEX_ABI)
+    contract = client.connection.eth.contract(address=Web3.to_checksum_address(IOTEX_WITHDRAW_CONTRACT), abi=IOTEX_ABI)
     params = (
         Web3.to_checksum_address(token_address),
         Web3.to_checksum_address(client.public_key),
@@ -42,7 +43,7 @@ def get_withdraw_in_polygon_from_iotex_transaction(client: Client, amount_in: fl
         b''
     )
 
-    value = amount_in_scaled if token_address == POLYGON_NATIVE_POL else 0
+    value = amount_in_scaled if token_address == POLYGON_NATIVE_POL else Web3.to_wei(FIX_AMOUNT_FOR_WITHDRAW,"ether")
 
     transaction = contract.functions.depositTo(
         *params
@@ -50,7 +51,7 @@ def get_withdraw_in_polygon_from_iotex_transaction(client: Client, amount_in: fl
         'from': client.public_key,
         'value': value,
         'gas': client.connection.eth.estimate_gas({
-            'to': IOTEX_POLYGON_DEPOSIT_CONTRACT,
+            'to': Web3.to_checksum_address(IOTEX_WITHDRAW_CONTRACT),
             'from': client.public_key,
             'data': contract.encode_abi("depositTo", args=params),
             'value': value
