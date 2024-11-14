@@ -122,7 +122,14 @@ chains = {
         "https://rpc.ankr.com/taiko",
         "ETH",
         ["https://taiko-mainnet.rpc.porters.xyz/taiko-public", "https://taiko-rpc.publicnode.com",
-         "https://taiko.drpc.org"])
+         "https://taiko.drpc.org"]),
+    "iotex": Chain(
+        "iotex",
+        4689,
+        "https://rpc.ankr.com/iotex",
+        "IOTX",
+        ["https://babel-api.mainnet.iotex.one", "https://babel-api.mainnet.iotex.io", "https://babel-api.fastblocks.io"]
+    )
 }
 
 poa_list = [
