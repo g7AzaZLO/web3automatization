@@ -405,4 +405,4 @@ If you have suggestions for improvements or find any issues, please open an issu
 
 *From sybils to sybils*
 
-G7[telegram]: https://t.me/g7team_en
+G7[telegram]: https://t.me/g7team_ru
